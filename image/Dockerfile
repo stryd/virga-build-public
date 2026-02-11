@@ -14,6 +14,7 @@ RUN apt-get update && \
         gcc g++ \
         make \
         jq \
+        bsdextrautils \
         python3 \
         python3-pip \
         && \
