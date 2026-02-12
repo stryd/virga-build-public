@@ -29,7 +29,7 @@ RUN wget https://developer.nordicsemi.com/.pc-tools/nrfutil/x64-linux/nrfutil -q
 # Install the toolchain we need
 ARG NCS_VERSION=v2.6.1
 RUN nrfutil toolchain-manager install --ncs-version ${NCS_VERSION} && \
-    nrfutil toolchain-manager env --as-script > /opt/toolchain-env.sh && \
+    nrfutil toolchain-manager env --as-script > /opt/toolchain-env.source && \
     rm -rf /opt/ncs/downloads /root/ncs/downloads
     
 # Setup our entrypoint
