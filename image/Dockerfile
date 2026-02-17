@@ -1,5 +1,5 @@
 # Copyright Stryd, Inc. February 2020, All rights reserved.
-ARG base_image=ubuntu:24.04
+ARG base_image=ubuntu:22.04
 
 FROM ${base_image}
 ENV DOCKER_BASE_IMAGE ${base_image:-unspecified}
@@ -15,11 +15,15 @@ RUN apt-get update && \
         make \
         jq \
         bsdextrautils \
-        python3 \
+        python3.11 \
         python3-pip \
         && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    update-alternatives --install /usr/bin/python3 python /usr/bin/python3.11 1
+
+
+ENV NRFUTIL_HOME /opt/nrfutil
 
 # Get the nrfutil tooling
 RUN wget https://developer.nordicsemi.com/.pc-tools/nrfutil/x64-linux/nrfutil -q -O /usr/local/bin/nrfutil && \
@@ -28,13 +32,21 @@ RUN wget https://developer.nordicsemi.com/.pc-tools/nrfutil/x64-linux/nrfutil -q
 
 # Install the toolchain we need
 ARG NCS_VERSION=v2.6.1
-RUN nrfutil toolchain-manager install --ncs-version ${NCS_VERSION} && \
-    nrfutil toolchain-manager env --as-script > /opt/toolchain-env.source && \
+RUN nrfutil toolchain-manager install --install-dir=/opt/ncs --ncs-version ${NCS_VERSION} && \
+    nrfutil toolchain-manager env --install-dir=/opt/ncs --as-script > /opt/toolchain-env.source && \
+    chmod a+w -R /opt/nrfutil/logs && \
     rm -rf /opt/ncs/downloads /root/ncs/downloads
     
 # Setup our entrypoint
 COPY ./entrypoint.sh /opt/image/entrypoint
 ENV PATH="/opt/image:${PATH}"
+
+ARG USERNAME=ubuntu
+ARG USER_UID=1000
+ARG USER_GID=${USER_UID}
+RUN groupadd --gid $USER_GID $USERNAME \
+  && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+  && chsh -s /usr/bin/bash $USERNAME
 
 LABEL description="The Virga Build System - arm-zephyr-eabi compatible build suite" \
       version="1.0" \
