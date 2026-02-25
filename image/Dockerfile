@@ -14,6 +14,7 @@ RUN apt-get update && \
         gcc g++ \
         make \
         jq \
+        zip unzip \
         bsdextrautils \
         python3.11 \
         python3-pip \
