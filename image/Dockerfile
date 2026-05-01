@@ -18,6 +18,7 @@ RUN apt-get update && \
         bsdextrautils \
         python3.11 \
         python3-pip \
+        ruby \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
