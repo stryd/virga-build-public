@@ -18,7 +18,8 @@ RUN apt-get update && \
         bsdextrautils \
         python3.11 \
         python3-pip \
-        ruby \
+        ruby libffi7 \
+        lcov \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
